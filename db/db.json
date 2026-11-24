@@ -1,0 +1,196 @@
+{
+  "$schema": "../../node_modules/json-server/schema.json",
+  "posts": [
+    { "id": "1", "title": "a title", "views": 100 },
+    { "id": "2", "title": "another title", "views": 200 }
+  ],
+  "comments": [
+    { "id": "1", "text": "a comment about post 1", "postId": "1" },
+    { "id": "2", "text": "another comment about post 1", "postId": "1" }
+  ],
+  "cards": [
+    {
+      "name": "aqua",
+      "path": "./src/assets/aqua.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "aquamarine",
+      "path": "./src/assets/aquamarine.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "bisque",
+      "path": "./src/assets/bisque.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "blue",
+      "path": "./src/assets/blue.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "blueviolet",
+      "path": "./src/assets/blueviolet.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "brown",
+      "path": "./src/assets/brown.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "cadetblue",
+      "path": "./src/assets/cadetblue.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "chartreuse",
+      "path": "./src/assets/chartreuse.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "chocolate",
+      "path": "./src/assets/chocolate.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "cornflowerblue",
+      "path": "./src/assets/cornflowerblue.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "crimson",
+      "path": "./src/assets/crimson.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkblue",
+      "path": "./src/assets/darkblue.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkcyan",
+      "path": "./src/assets/darkcyan.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkmagenta",
+      "path": "./src/assets/darkmagenta.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkorange",
+      "path": "./src/assets/darkoranhe.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkorchid",
+      "path": "./src/assets/darkorchid.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkred",
+      "path": "./src/assets/darkred.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkviolet",
+      "path": "./src/assets/darkviolet.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "deppink",
+      "path": "./src/assets/deepink.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "darkgreen",
+      "path": "./src/assets/darkgreen.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "firebrick",
+      "path": "./src/assets/firebrick.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "forestgreen",
+      "path": "./src/assets/foresrtgreen.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "fuchsia",
+      "path": "./src/assets/fuchsia.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "indigo",
+      "path": "./src/assets/indigo.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "lavender",
+      "path": "./src/assets/lavender.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "lawngreen",
+      "path": "./src/assets/lawngreen.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "lightblue",
+      "path": "./src/assets/ligthblue.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "yellowgreen",
+      "path": "./src/assets/yellowgreen.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "lightpink",
+      "path": "./src/assets/lightpink.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    },
+    {
+      "name": "lightslategray",
+      "path": "./src/assets/lightslategray.png",
+      "alpha": 0.5,
+      "radius": "20px"
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
