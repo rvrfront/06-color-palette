@@ -2,7 +2,8 @@ import { Header } from "./components/Header";
 import { Search } from "./components/Search";
 
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getData } from "./helpers/getDataFromApi";
 
 export const App = () => {
   const [query, setQuery] = useState("");
@@ -10,6 +11,9 @@ export const App = () => {
     console.log("query from my son: ", arg);
     setQuery(arg);
   }
+  useEffect(()=>{
+    getData().then(console.log);
+  },[]);
   return(
     <div className="app">
       <Header title="Enjoy With colors palette"></Header>
