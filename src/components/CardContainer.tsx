@@ -1,7 +1,7 @@
 import type { ICardContainerProps } from "../interfaces/ICArdContainerProps";
 import { Card } from "./Card";
 
-import "./CardContainer.css";
+import "../styles/CardContainer.css";
 
 export const CardContainer = ({props = []}: ICardContainerProps) => {
     

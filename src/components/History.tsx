@@ -1,5 +1,5 @@
 import type { IHistoryProps } from "../interfaces/IHistory.interface";
-import "./History.css";
+import "../styles/History.css";
 
 export const History = ({terms, passQuery}: IHistoryProps) => {
     return(

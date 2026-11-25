@@ -1,24 +1,12 @@
-import { useState } from "react";
 import type {ICardProps} from "../interfaces/ICard.interface";
 
-import "./Card.css";
+import "../styles/Card.css";
+import { useCard } from "../hooks/useCard";
 
 
 export const Card = ({props}: ICardProps) => {
-    const {alpha, id, name, path, radius} = props;
-    const [alphaValue, setAlphaValue] = useState(alpha);
-    const [radiusValue, setRadiusValue] = useState(radius);
-    
-    const handleOnChangeAlpha = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-        setAlphaValue(Number(e.target.value));
-        console.log("alpha value: ", alphaValue);
-    }
 
-    const handleOnChangeRadius = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-        const val = e.target.value + "px";
-        setRadiusValue(val);
-        console.log("border-radius: ", radiusValue);
-    }
+   const {path, name, id, alphaValue, radiusValue, handleOnChangeAlpha, handleOnChangeRadius} = useCard({props});
     
     return(
         <div className="card" style={{borderRadius: radiusValue}}>

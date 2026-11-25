@@ -1,5 +1,5 @@
 import type { IHeaderProps } from "../interfaces/IHeader.interface";
-import "./Header.css";
+import "../styles/Header.css";
 
 export const Header = ({title}: IHeaderProps) => {
     return(
