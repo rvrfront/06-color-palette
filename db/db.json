@@ -95,7 +95,7 @@
     },
     {
       "name": "darkorange",
-      "path": "./src/assets/darkoranhe.png",
+      "path": "./src/assets/darkorange.png",
       "alpha": 0.5,
       "radius": "20px"
     },
@@ -137,7 +137,7 @@
     },
     {
       "name": "forestgreen",
-      "path": "./src/assets/foresrtgreen.png",
+      "path": "./src/assets/forestgreen.png",
       "alpha": 0.5,
       "radius": "20px"
     },
@@ -167,7 +167,7 @@
     },
     {
       "name": "lightblue",
-      "path": "./src/assets/ligthblue.png",
+      "path": "./src/assets/lightblue.png",
       "alpha": 0.5,
       "radius": "20px"
     },

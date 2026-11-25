@@ -2,5 +2,6 @@ export interface Data{
     name: string;
     path: string;
     alpha: number;
-    radius: string;   
+    radius: string;  
+    id: string; 
 }
