@@ -14,7 +14,7 @@ export const CardContainer = ({props = []}: ICardContainerProps) => {
             {
                 props && props.map(card => {
                     return(
-                        <Card props= {card}></Card>
+                        <Card key={card.id} props= {card}></Card>
                     )
                 })
             }

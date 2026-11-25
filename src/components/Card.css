@@ -30,8 +30,7 @@
     justify-content: space-between;
 }
 
-
-.info-container .row-1, .info-container .row-2{
+.info-container .row-1, .info-container .row-2, .card-container .row-3{
     width: 90%;
     margin: 0 auto;
     display: flex;
@@ -39,6 +38,11 @@
     flex-wrap: nowrap;
     justify-content: space-between;
 } 
+
+
+.row-3 input[type="range"]{
+    accent-color: var(--accent-color);
+}
 
 
 
