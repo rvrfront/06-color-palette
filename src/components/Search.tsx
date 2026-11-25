@@ -16,6 +16,7 @@ export const Search= ({placeholder, passQuery}: ISearchProps) => {
     const handleOnDelete = () => {
         console.log("Deleting...");
         setQuery("");
+        passQuery("");
     }
 
     return(

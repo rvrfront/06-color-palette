@@ -18,11 +18,20 @@ export const App = () => {
   useEffect(()=>{
     getData().then(dataColor => setColors(dataColor));
   },[]);
+
+
+  const filteredColors = (query: string): CardProps[] => {
+    if (query) {
+      return colors.filter(color => color.name.includes(query.toLocaleLowerCase().trim()));
+    }
+    return colors; 
+  }
+
   return(
     <div className="app">
       <Header title="Enjoy With colors palette"></Header>
       <Search placeholder="Type color to search..." passQuery={getQueryFromSearchComponent}></Search>
-      <CardContainer props={colors}></CardContainer>
+      <CardContainer props={filteredColors(query)}></CardContainer>
     </div>
   );
 }
