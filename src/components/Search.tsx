@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { ISearchProps } from "../interfaces/ISearch.interface";
 import "../styles/Search.css";
 import { useSearch } from "../hooks/useSearch";

@@ -1,4 +1,4 @@
 export interface ISearchProps{
-    placeholder: string;
+    placeholder?: string;
     passQuery: (arg: string) => void;
 }
