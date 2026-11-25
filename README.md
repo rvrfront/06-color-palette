@@ -60,7 +60,8 @@ project-root/
 │       ├── IHistory.interface.ts
 │       └── ISearch.interface.ts
 │
-└── README.md
+├── README.md
+└── .env
 ```
 
 ## Application Architecture
@@ -185,6 +186,23 @@ This implementation demonstrates:
 - Communication between parent and child components.
 - Dynamic rendering of collections.
 - Separation between application logic and presentation.
+
+## Environment Variables and Version Control
+
+The project uses a `.env` file to centralize non-sensitive
+environment configuration, including CSS styling-related
+variables and the API base URL.
+
+The `.env` file is intentionally tracked by Git and included
+in the repository because it does not contain sensitive
+information, credentials, API keys, access tokens, or secrets.
+
+This approach ensures consistent configuration across
+development environments and simplifies project setup.
+
+If sensitive environment variables are required in the
+future, they should be stored in a separate environment
+file excluded from version control through `.gitignore`.
 
 ## API Integration
 
