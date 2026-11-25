@@ -1,7 +1,7 @@
 import type { IHistoryProps } from "../interfaces/IHistory.interface";
 import "./History.css";
 
-export const History = ({props}: IHistoryProps) => {
+export const History = ({terms, passQuery}: IHistoryProps) => {
     return(
         <div className="history">
             <div className="title">
@@ -9,9 +9,9 @@ export const History = ({props}: IHistoryProps) => {
             </div>
             <div className="buttons-container">
                     {
-                props && props.map(item => {
+                terms && terms.map(item => {
                     return(
-                        <button key={item} > {item} </button>
+                        <button key={item} onClick={()=> passQuery(item)}> {item} </button>
                     )
                 })
             }

@@ -1,3 +1,4 @@
 export interface IHistoryProps{
-    props: string[];
+    terms: string[];
+    passQuery: (arg: string) => void;
 }

@@ -26,6 +26,10 @@ export const App = () => {
     setQuery(arg);
     addTerm(arg);
   }
+
+  const getQueryFromHistoryComponent = (arg: string) => {
+    setQuery(arg);
+  }
   useEffect(()=>{
     getData().then(dataColor => setColors(dataColor));
   },[]);
@@ -41,7 +45,7 @@ export const App = () => {
     return(
     <div className="app">
       <Header title="Enjoy With colors palette"></Header>
-      <History props= {terms}></History>
+      <History terms= {terms} passQuery={getQueryFromHistoryComponent}></History>
       <Search placeholder="Type color to search..." passQuery={getQueryFromSearchComponent}></Search>
       <CardContainer props={filteredColors(query)}></CardContainer>
     </div>
