@@ -13,6 +13,15 @@ export const Search= ({placeholder, passQuery}: ISearchProps) => {
         passQuery(query);
     }
 
+    const handleEnterPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && query.trim()) {
+            passQuery(query);
+        }
+        else if (e.key === "Enter" && !query.trim()){
+            passQuery("");
+        }
+    }
+
     const handleOnDelete = () => {
         console.log("Deleting...");
         setQuery("");
@@ -21,7 +30,7 @@ export const Search= ({placeholder, passQuery}: ISearchProps) => {
 
     return(
         <div className="container">
-            <input type="text" placeholder={placeholder} value={query} onChange={handleInputOnChange}/>
+            <input type="text" placeholder={placeholder} value={query} onChange={handleInputOnChange} onKeyDown={handleEnterPressed}/>
             <div className="buttons-container">
                 <button onClick={handleOnSearch} id="search">search</button>
                 <button onClick={handleOnDelete} id="delete">delete</button>
