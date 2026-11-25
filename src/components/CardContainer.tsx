@@ -6,7 +6,7 @@ import "./CardContainer.css";
 export const CardContainer = ({props = []}: ICardContainerProps) => {
     
     if (props.length === 0) {
-        return <h1 className="no-data">No data...</h1>
+        return <h1 className="no-data">No results</h1>
     }
     
     return(

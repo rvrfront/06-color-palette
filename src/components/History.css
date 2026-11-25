@@ -1,0 +1,33 @@
+.history{
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: var(--background-color);
+}
+
+.history .title{
+    color: var(--accent-color);
+    font-size: 2.4rem;
+    text-align: center;
+    margin-top: 0;
+}
+
+.buttons-container{
+    margin: 0 auto;
+    margin-bottom: 25px;
+}
+
+
+.history button{
+    margin: 0 auto;
+    border: 2px solid var(--accent-color);
+    padding: 15px;
+    margin: 0 25px;
+    color: var(--accent-color);
+    background-color: var(--surface-color);
+    cursor:pointer;
+    border-radius: 10px;
+}
