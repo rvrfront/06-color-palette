@@ -1,356 +1,214 @@
 # Color Palette Explorer
 
-## Overview
+An interactive React and TypeScript application for exploring a collection of colors and experimenting with image opacity and card border radius. The frontend retrieves its dataset from a local mock REST API using Axios and JSON Server.
 
-Color Palette Explorer is an interactive web application built with React and TypeScript that allows users to explore and search through a predefined collection of colors.
-
-The application retrieves color data from a mock REST API using Axios, filters the results based on user search queries, and maintains a search history for easy access to previous searches.
-
-The project demonstrates fundamental React concepts, including component-based architecture, state management, derived data, parent-child communication, asynchronous data fetching, and TypeScript type safety.
+The project focuses on custom hooks, component composition, typed data contracts, derived state, and environment-based styling.
 
 ## Features
 
-- **Color Exploration:** Browse a collection of colors displayed through individual card components.
-- **Dynamic Filtering:** Filter colors by name based on the current search query.
-- **Search History:** Store and display previous search terms.
-- **Reusable Components:** Modular UI components with clearly defined responsibilities.
-- **API Integration:** Retrieve color data from a mock REST API using Axios.
-- **Mock Backend:** Use JSON Server to expose a local JSON database through HTTP endpoints.
-- **Type Safety:** Use TypeScript interfaces to define data models and component props.
+- Browse color cards containing an image, name, identifier, and styling values.
+- Search by partial color name using the Search button or Enter key.
+- Clear the search and restore the complete collection.
+- Reuse previous searches through clickable history buttons (up to eight distinct, non-empty submitted terms).
+- Adjust image opacity from 0% to 100% and card border radius from 0 to 50 px independently for each card.
+- Display a `No results` message when the filtered collection is empty.
+- Configure the application theme and API endpoint through environment variables.
 
 ## Technologies
 
 | Technology | Purpose |
-|---|---|
-| React | Component-based user interface |
-| TypeScript | Static typing and data contracts |
-| Axios | HTTP client and API communication |
-| JSON Server | Mock REST API |
-| JSON | Local data storage |
-| CSS | Component and application styling |
+| --- | --- |
+| React | Functional components, hooks and UI rendering |
+| TypeScript | Static typing and component contracts |
+| Vite | Development server and production build |
+| Axios | HTTP client |
+| JSON Server | Local mock REST API |
+| CSS | Component styles, custom properties and dynamic inline styles |
+| ESLint | Static code analysis |
+
+## Getting Started
+
+Ensure Node.js and npm are installed, using a Node.js version compatible with the project's Vite dependency.
+
+```bash
+git clone https://github.com/rvrfront/06-color-palette.git
+cd 06-color-palette
+npm ci
+```
+
+Start the mock API in one terminal:
+
+```bash
+npm run server
+```
+
+Start the frontend in a second terminal:
+
+```bash
+npm run dev
+```
+
+Open the local URL displayed by Vite. The configured API endpoint is `http://localhost:3000/cards`.
+
+### Available Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run server` | Serve `db/db.json` through JSON Server |
+| `npm run build` | Run TypeScript compilation and create the production build |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Run ESLint |
 
 ## Project Structure
 
-The application is organized to separate presentation logic, state management, API communication, and data definitions.
+The following tree shows the principal application files and directories.
 
-```
+```text
 project-root/
 ├── db/
 │   └── db.json
-│
 ├── src/
-│   ├── App.tsx
-│   │
+│   ├── assets/
 │   ├── components/
 │   │   ├── Card.tsx
 │   │   ├── CardContainer.tsx
 │   │   ├── Header.tsx
 │   │   ├── History.tsx
 │   │   └── Search.tsx
-│   │
 │   ├── helpers/
 │   │   ├── apiAxios.ts
 │   │   └── getDataFromApi.ts
-│   │
-│   └── interfaces/
-│       ├── ICard.interface.ts
-│       ├── ICardContainerProps.ts
-│       ├── IData.interface.ts
-│       ├── IHeader.interface.ts
-│       ├── IHistory.interface.ts
-│       └── ISearch.interface.ts
-│
-├── README.md
-└── .env
+│   ├── hooks/
+│   │   ├── useApp.tsx
+│   │   ├── useCard.tsx
+│   │   └── useSearch.tsx
+│   ├── interfaces/
+│   ├── styles/
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .env
+├── package.json
+├── vite.config.ts
+└── README.md
 ```
 
 ## Application Architecture
 
-The application follows a component-based architecture with a separation between state management, presentation logic, and data access.
-
-- **Application Layer (`App.tsx`):** Manages application state, coordinates data fetching, handles search history, and implements filtering logic.
-- **Presentation Layer (`components/`):** Contains reusable React components responsible for rendering the user interface and handling user interactions.
-- **Data Access Layer (`helpers/`):** Encapsulates HTTP client configuration and API requests.
-- **Type Definition Layer (`interfaces/`):** Defines TypeScript interfaces for data models and component props.
-- **Mock Backend (`db/`):** Contains the JSON dataset exposed through JSON Server.
+The application separates rendering, stateful logic, HTTP communication, type definitions and styling. `App` composes the main interface, while custom hooks encapsulate state and event handling.
 
 ### Component Hierarchy
 
-```
-App
+```text
+App (useApp)
 ├── Header
-├── Search
 ├── History
+├── Search (useSearch)
 └── CardContainer
-    ├── Card
-    ├── Card
-    └── Card ...
+    ├── Card (useCard)
+    ├── Card (useCard)
+    └── ...
 ```
 
-## Component Responsibilities
+### Component Responsibilities
 
 | Component | Responsibility |
-|---|---|
-| `App` | Manages application state, data fetching, search history, and filtering logic. |
-| `Header` | Displays the application header and title. |
-| `Search` | Handles user input and communicates search queries to the parent component through callback functions. |
-| `History` | Displays previously stored search terms and supports interaction with search history. |
-| `CardContainer` | Receives a collection of colors and renders individual Card components. Displays a message when no results are available. |
-| `Card` | Renders the visual representation and information associated with an individual color. |
+| --- | --- |
+| `App` | Connects application state and callbacks to the main UI components. |
+| `Header` | Renders the title supplied through props. |
+| `Search` | Displays a controlled text input and search/reset controls. |
+| `History` | Renders previous search terms as clickable buttons. |
+| `CardContainer` | Maps color records to keyed card components or displays an empty-state message. |
+| `Card` | Presents color information and controls for individual visual adjustments. |
 
-Each component has a specific responsibility, promoting maintainability and reusability.
+## Custom Hooks
+
+| Hook | Responsibility |
+| --- | --- |
+| `useApp` | Loads the dataset, manages the active query and search history, and derives filtered results. |
+| `useSearch` | Manages the input value, search submission, keyboard events and reset behavior. |
+| `useCard` | Maintains per-card opacity and border radius state and handles slider changes. |
+
+This structure keeps the JSX focused on presentation without introducing an external state management library.
 
 ## State Management and Data Flow
 
-Application-level state is managed within `App.tsx` using React's `useState` hook.
+Application state resides in `useApp` and is shared with components through props and callbacks.
 
-| State | Type | Responsibility |
-|---|---|---|
-| `query` | `string` | Stores the current search query. |
-| `colors` | `CardProps[]` | Stores the original color dataset retrieved from the API. |
-| `terms` | `string[]` | Stores previous search terms. |
+| State | Type | Purpose |
+| --- | --- | --- |
+| `query` | `string` | Active search term |
+| `colors` | `CardProps[]` | Original dataset returned by the API |
+| `terms` | `string[]` | Search history |
 
-The application uses lifted state to coordinate communication between child components without requiring an external state management library.
+`useSearch` maintains its own input state. Each `useCard` instance maintains its own numeric alpha value and CSS radius string.
 
-### Data Flow
+On mount, an effect requests the color dataset. Submitting a search updates the application query, and selecting a history entry updates that same query. The filtered collection is calculated from the original array during rendering rather than stored as additional state. The resulting array is passed to `CardContainer`.
 
-1. On initial rendering, `useEffect` triggers the asynchronous data fetching operation.
-2. The API response populates the `colors` state.
-3. The `Search` component captures user input.
-4. Callback functions communicate search queries from the child component to `App.tsx`.
-5. The parent component updates the corresponding state.
-6. The filtered collection is calculated from the original color dataset and the current query.
-7. The resulting collection is passed to `CardContainer` through props.
-8. `CardContainer` renders the corresponding `Card` components.
-9. Previous search terms are passed to the `History` component.
+### Search and History
 
-### Parent-Child Communication
+Filtering uses partial string matching against color names after lowercasing and trimming the query. An empty query restores the full dataset. History rejects empty strings and exact duplicate entries and stops accepting new entries once it contains eight terms. History is held in memory, not persisted across page reloads.
 
-The application uses props to pass data from parent components to child components and callback functions to communicate user interactions back to the parent.
+### Interactive Card Styling
 
-```
-                App
-                 |
-        State and filtering
-                 |
-    +------------+------------+
-    |            |            |
-  Search      History    CardContainer
-    |            |            |
-    +------------+          Card(s)
-      Callbacks
-      to parent
-```
-
-This approach follows React's unidirectional data flow model.
-
-## Search and Filtering Implementation
-
-Filtering is implemented in `App.tsx` through a function that derives a filtered collection from the original color dataset.
-
-```tsx
-const filteredColors = (query: string): CardProps[] => {
-    if (query) {
-        return colors.filter(color =>
-            color.name.includes(
-                query.toLocaleLowerCase().trim()
-            )
-        );
-    }
-
-    return colors;
-};
-```
-
-The filtering logic:
-
-- Converts the search query to lowercase.
-- Removes leading and trailing whitespace.
-- Uses the JavaScript `filter()` method to select matching colors.
-- Uses `includes()` to perform partial name matching.
-- Returns the complete dataset when no search query is provided.
-
-The original dataset remains unchanged during filtering.
-
-The filtered collection is derived from existing state rather than stored in a separate state variable. This avoids unnecessary state duplication and helps maintain consistency between the original dataset and the displayed results.
-
-## Search History
-
-The application maintains a collection of previous search terms using a typed array stored in the parent component.
-
-The history is passed to the `History` component through props, separating history management from its visual representation.
-
-This implementation demonstrates:
-
-- Array-based state management.
-- Communication between parent and child components.
-- Dynamic rendering of collections.
-- Separation between application logic and presentation.
-
-## Environment Variables and Version Control
-
-The project uses a `.env` file to centralize non-sensitive
-environment configuration, including CSS styling-related
-variables and the API base URL.
-
-The `.env` file is intentionally tracked by Git and included
-in the repository because it does not contain sensitive
-information, credentials, API keys, access tokens, or secrets.
-
-This approach ensures consistent configuration across
-development environments and simplifies project setup.
-
-If sensitive environment variables are required in the
-future, they should be stored in a separate environment
-file excluded from version control through `.gitignore`.
+Each card initializes its visual state from the API record. The alpha slider is converted to a numeric value and divided by 100 to produce a valid CSS opacity. The radius slider value is converted to a pixel-based CSS length and applied to the card container. These updates affect local component state rather than writing changes to the mock database.
 
 ## API Integration
 
-API communication is centralized within the `src/helpers/` directory.
+The `apiAxios.ts` helper creates a shared Axios client with an environment-configured base URL, a three-second timeout and a JSON content-type header. The `getDataFromApi.ts` helper performs an asynchronous request and returns a typed array of color records.
 
-### HTTP Client Configuration
-
-The `apiAxios.ts` helper defines a reusable Axios instance.
-
-The instance uses an environment variable to configure the API base URL, separating the application code from environment-specific configuration.
-
-Centralizing the HTTP client configuration allows API requests to share common settings.
-
-### Data Fetching
-
-The `getDataFromApi.ts` helper encapsulates the asynchronous data retrieval operation.
-
-```typescript
-export const getData = async (): Promise<Data[]> => {
-    const response = await apiClient<Data[]>("");
-    const colors = response.data;
-
-    return colors;
-};
+```text
+db/db.json → JSON Server → Axios client → getData → useApp → UI components
 ```
 
-This implementation demonstrates:
+## TypeScript Data Model
 
-- Asynchronous programming with `async/await`.
-- Typed HTTP responses using TypeScript generics.
-- Explicit Promise return types.
-- Separation of API communication from UI components.
+The color response model is defined in `IData.interface.ts`.
 
-### API Data Flow
+| Field | Type | Purpose |
+| --- | --- | --- |
+| `name` | `string` | Display name and search target |
+| `path` | `string` | Image resource path |
+| `alpha` | `number` | Initial opacity percentage |
+| `radius` | `string` | Initial CSS border radius |
+| `id` | `string` | Record identifier used in the UI and React list keys |
 
-```
-db/db.json
-     |
-     v
-JSON Server
-     |
-     v
-REST API
-     |
-     v
-Axios HTTP Client
-     |
-     v
-getDataFromApi.ts
-     |
-     v
-App.tsx
-     |
-     v
-React Components
-```
-
-## TypeScript Data Models
-
-The project uses TypeScript interfaces to define the structure of API responses and component props.
-
-### Color Data Model
-
-The color data model is defined in `IData.interface.ts`.
-
-```typescript
-export interface Data {
-    name: string;
-    path: string;
-    alpha: number;
-    radius: string;
-    id: string;
-}
-```
-
-| Property | Type | Description |
-|---|---|---|
-| `name` | `string` | Color name used for display and filtering. |
-| `path` | `string` | Path associated with the color resource. |
-| `alpha` | `number` | Alpha value associated with the color. |
-| `radius` | `string` | Radius value associated with the color representation. |
-| `id` | `string` | Unique identifier for the color item. |
-
-### Component Interfaces
-
-The `src/interfaces/` directory contains interfaces that define data contracts between components.
-
-These interfaces help ensure consistent typing of:
-
-- Component props.
-- Color data.
-- Collections of color items.
-- Search callbacks.
-- Search history.
-- Header configuration.
-
-Using dedicated interfaces improves code readability, maintainability, and compile-time type checking.
+Dedicated interfaces also describe component props and callback contracts.
 
 ## Mock Database
 
-The `db/db.json` file contains the local dataset used by the application.
+`db/db.json` contains the `cards` collection consumed by the frontend. Each stored color entry supplies its name, image path, initial alpha and radius. The file also includes sample `posts`, `comments` and `profile` resources, which are not used by the reviewed color explorer code.
 
-JSON Server exposes this dataset through a mock REST API, allowing the React frontend to retrieve data using standard HTTP requests without requiring a custom backend implementation.
+## Environment Variables and Version Control
 
-This approach provides a practical environment for developing and testing frontend API integration.
+The `.env` file is intentionally tracked by Git. It contains only non-sensitive theme configuration and the local mock API URL; it contains no API keys, credentials, access tokens or secrets.
 
-The mock backend is independent of the frontend implementation, allowing the data source to be replaced in the future without requiring significant changes to the presentation layer.
+| Environment variable | CSS custom property / purpose |
+| --- | --- |
+| `VITE_BACKGROUND_COLOR` | `--background-color` |
+| `VITE_SURFACE_COLOR` | `--surface-color` |
+| `VITE_SECONDARY_COLOR` | `--secondary-color` |
+| `VITE_ACCENT_COLOR` | `--accent-color` |
+| `VITE_COLOR_TEXT` | `--color-text` |
+| `VITE_ERROR_COLOR` | `--error-color` |
+| `VITE_API_URL` | Axios base URL |
+
+At startup, `main.tsx` reads the theme values through `import.meta.env` and assigns them to CSS custom properties on the document root. Component styles consume those properties using `var()`.
+
+Vite exposes `VITE_` variables to client-side code, so secrets must never be placed in them, even in a Git-ignored file. Any future server-side secrets should be stored separately and excluded from version control.
 
 ## Technical Highlights
 
-### React
+- Custom hooks and separation of stateful logic from presentation.
+- Controlled inputs, typed event handlers and callback props.
+- Lifted state, unidirectional data flow and derived collections.
+- Conditional rendering and keyed lists.
+- Independent component state and dynamic CSS styling.
+- Typed asynchronous HTTP requests and centralized API configuration.
+- Local mock backend and configurable frontend theme.
 
-- Functional components.
-- Component-based architecture.
-- State management with `useState`.
-- Side effects and initial data fetching with `useEffect`.
-- Parent-child communication through props and callbacks.
-- Lifted state.
-- Unidirectional data flow.
-- Derived data.
-- Conditional rendering.
-- Dynamic rendering of collections.
-- Reusable UI components.
+## Current Scope
 
-### TypeScript
-
-- Custom interfaces.
-- Strongly typed component props.
-- Typed arrays.
-- Function parameter and return types.
-- Typed callback functions.
-- Generic HTTP responses.
-- Asynchronous functions with typed Promises.
-
-### JavaScript
-
-- Array filtering.
-- Array mapping.
-- String normalization.
-- Partial string matching.
-- Asynchronous programming.
-- ES module imports and exports.
-
-### Software Architecture
-
-- Separation of concerns.
-- Centralized HTTP client configuration.
-- Independent data access layer.
-- Environment-based API configuration.
-- Mock REST API integration.
-- Modular and maintainable project structure.
+The application is a frontend learning project backed by a local mock API. Search history and card adjustments are in-memory UI state. The reviewed implementation does not include explicit loading/error UI or automated test scripts.
