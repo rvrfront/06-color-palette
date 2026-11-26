@@ -2,7 +2,7 @@
 
 An interactive React and TypeScript application for exploring a collection of colors and experimenting with image opacity and card border radius. The frontend retrieves its dataset from a local mock REST API using Axios and JSON Server.
 
-The project focuses on custom hooks, component composition, typed data contracts, derived state, and environment-based styling.
+The project focuses on custom hooks, component composition, typed data contracts, state management, in-memory search results caching, render purity, and environment-based styling.
 
 ## Features
 
@@ -10,6 +10,9 @@ The project focuses on custom hooks, component composition, typed data contracts
 - Search by partial color name using the Search button or Enter key.
 - Clear the search and restore the complete collection.
 - Reuse previous searches through clickable history buttons (up to eight distinct, non-empty submitted terms).
+- Cache search results in memory to avoid redundant filtering operations.
+- Normalize search queries to ensure consistent cache keys.
+- Retrieve previously computed search results without repeating the filtering process.
 - Adjust image opacity from 0% to 100% and card border radius from 0 to 50 px independently for each card.
 - Display a `No results` message when the filtered collection is empty.
 - Configure the application theme and API endpoint through environment variables.
@@ -97,7 +100,11 @@ project-root/
 
 ## Application Architecture
 
-The application separates rendering, stateful logic, HTTP communication, type definitions and styling. `App` composes the main interface, while custom hooks encapsulate state and event handling.
+The application separates rendering, stateful logic, cache management, HTTP communication, type definitions and styling.
+
+`App` composes the main interface, while custom hooks encapsulate state, event handling and search-related business logic.
+
+Search result calculation and cache management are decoupled from the rendering process. Presentation components consume prepared results without knowing whether they originate from the original dataset, a filtering operation or the search cache.
 
 ### Component Hierarchy
 
@@ -120,14 +127,14 @@ App (useApp)
 | `Header` | Renders the title supplied through props. |
 | `Search` | Displays a controlled text input and search/reset controls. |
 | `History` | Renders previous search terms as clickable buttons. |
-| `CardContainer` | Maps color records to keyed card components or displays an empty-state message. |
+| `CardContainer` | Maps prepared color records to keyed card components or displays an empty-state message. |
 | `Card` | Presents color information and controls for individual visual adjustments. |
 
 ## Custom Hooks
 
 | Hook | Responsibility |
 | --- | --- |
-| `useApp` | Loads the dataset, manages the active query and search history, and derives filtered results. |
+| `useApp` | Loads the dataset, manages the active query, search history, search results cache and displayed color collection. |
 | `useSearch` | Manages the input value, search submission, keyboard events and reset behavior. |
 | `useCard` | Maintains per-card opacity and border radius state and handles slider changes. |
 
@@ -142,25 +149,151 @@ Application state resides in `useApp` and is shared with components through prop
 | `query` | `string` | Active search term |
 | `colors` | `CardProps[]` | Original dataset returned by the API |
 | `terms` | `string[]` | Search history |
+| `displayedColors` | `CardProps[]` | Color records currently displayed in the interface |
 
 `useSearch` maintains its own input state. Each `useCard` instance maintains its own numeric alpha value and CSS radius string.
 
-On mount, an effect requests the color dataset. Submitting a search updates the application query, and selecting a history entry updates that same query. The filtered collection is calculated from the original array during rendering rather than stored as additional state. The resulting array is passed to `CardContainer`.
+On mount, an effect requests the color dataset and initializes both the original and displayed color collections.
+
+Submitting a search or selecting a history entry triggers a search event handler. The handler obtains the corresponding results through the cache management function and updates `displayedColors`.
+
+The resulting array is passed directly to `CardContainer`, keeping cache mutations and search processing outside the rendering phase.
 
 ### Search and History
 
-Filtering uses partial string matching against color names after lowercasing and trimming the query. An empty query restores the full dataset. History rejects empty strings and exact duplicate entries and stops accepting new entries once it contains eight terms. History is held in memory, not persisted across page reloads.
+Filtering uses partial string matching against color names after lowercasing and trimming the query. An empty query restores the full dataset.
+
+History rejects empty strings and exact duplicate entries and stops accepting new entries once it contains eight terms.
+
+Both the search form and history buttons use the same cache management logic to retrieve search results.
+
+History is held in memory, not persisted across page reloads.
+
+### Search Results Caching
+
+The application implements an in-memory caching mechanism to avoid repeated filtering operations for previously submitted search queries.
+
+The cache is defined at module scope within `useApp.tsx` using a typed dictionary:
+
+```typescript
+const cachedResults: Record<string, CardProps[]> = {};
+```
+
+Each cache entry associates a normalized search query with its corresponding filtered collection of color records.
+
+Because the cache is defined outside the custom hook, it persists across React re-renders without requiring additional React state or triggering unnecessary UI updates.
+
+#### Cache Strategy
+
+The search cache follows a cache-aside strategy:
+
+1. Normalize the incoming search query by lowercasing and trimming it.
+2. Return the original dataset if the normalized query is empty.
+3. Check whether the normalized query exists in the cache.
+4. If the query is cached, retrieve its stored results (Cache Hit).
+5. Otherwise, filter the original dataset and store the results (Cache Miss).
+6. Return the resulting collection.
+7. Update the `displayedColors` state through the corresponding event handler.
+
+```text
+User Search / History Selection
+              │
+              ▼
+       Normalize Query
+              │
+              ▼
+       Empty Query?
+        │         │
+       Yes        No
+        │         │
+        ▼         ▼
+ Original Data  Check Cache
+                  │      │
+                 Hit    Miss
+                  │      │
+                  │      ▼
+                  │   Filter Colors
+                  │      │
+                  │      ▼
+                  │   Store Results
+                  │      │
+                  ▼      ▼
+              Return Results
+                     │
+                     ▼
+              setDisplayedColors
+                     │
+                     ▼
+                React Render
+                     │
+                     ▼
+                CardContainer
+```
+
+#### Cache Characteristics
+
+- Module-level, in-memory storage.
+- Persistent across component re-renders.
+- Shared between instances of the custom hook within the same module.
+- Type-safe cache entries through TypeScript's `Record` utility type.
+- Normalized search keys for case and whitespace consistency.
+- Reuse of previously computed results, including empty result collections.
+- No external caching library or additional dependencies.
+- Cache mutations are handled through user event handlers rather than during rendering.
+- Cache contents are not persisted across full page reloads.
+
+#### Cache Management and Render Purity
+
+The application separates three distinct responsibilities:
+
+| Data structure | Responsibility |
+| --- | --- |
+| `colors` | Original dataset and source of truth |
+| `cachedResults` | Storage and retrieval of previously computed search results |
+| `displayedColors` | React state representing the collection currently displayed |
+
+Cache management is performed inside search and history event handlers.
+
+The presentation layer consumes the resulting `displayedColors` state without directly accessing or modifying the cache.
+
+This approach promotes separation of concerns, encapsulation, loose coupling and render purity.
 
 ### Interactive Card Styling
 
-Each card initializes its visual state from the API record. The alpha slider is converted to a numeric value and divided by 100 to produce a valid CSS opacity. The radius slider value is converted to a pixel-based CSS length and applied to the card container. These updates affect local component state rather than writing changes to the mock database.
+Each card initializes its visual state from the API record. The alpha slider is converted to a numeric value and divided by 100 to produce a valid CSS opacity.
+
+The radius slider value is converted to a pixel-based CSS length and applied to the card container.
+
+These updates affect local component state rather than writing changes to the mock database.
 
 ## API Integration
 
-The `apiAxios.ts` helper creates a shared Axios client with an environment-configured base URL, a three-second timeout and a JSON content-type header. The `getDataFromApi.ts` helper performs an asynchronous request and returns a typed array of color records.
+The `apiAxios.ts` helper creates a shared Axios client with an environment-configured base URL, a three-second timeout and a JSON content-type header.
+
+The `getDataFromApi.ts` helper performs an asynchronous request and returns a typed array of color records.
 
 ```text
-db/db.json → JSON Server → Axios client → getData → useApp → UI components
+db/db.json
+    │
+    ▼
+JSON Server
+    │
+    ▼
+Axios Client
+    │
+    ▼
+getData
+    │
+    ▼
+useApp
+    │
+    ├── Original Dataset
+    ├── Search History
+    ├── Search Results Cache
+    └── Displayed Colors
+              │
+              ▼
+        UI Components
 ```
 
 ## TypeScript Data Model
@@ -177,9 +310,15 @@ The color response model is defined in `IData.interface.ts`.
 
 Dedicated interfaces also describe component props and callback contracts.
 
+The search cache uses TypeScript's `Record<string, CardProps[]>` utility type to associate normalized search terms with typed collections of color records.
+
 ## Mock Database
 
-`db/db.json` contains the `cards` collection consumed by the frontend. Each stored color entry supplies its name, image path, initial alpha and radius. The file also includes sample `posts`, `comments` and `profile` resources, which are not used by the reviewed color explorer code.
+`db/db.json` contains the `cards` collection consumed by the frontend.
+
+Each stored color entry supplies its name, image path, initial alpha and radius.
+
+The file also includes sample `posts`, `comments` and `profile` resources, which are not used by the reviewed color explorer code.
 
 ## Environment Variables and Version Control
 
@@ -195,20 +334,41 @@ The `.env` file is intentionally tracked by Git. It contains only non-sensitive 
 | `VITE_ERROR_COLOR` | `--error-color` |
 | `VITE_API_URL` | Axios base URL |
 
-At startup, `main.tsx` reads the theme values through `import.meta.env` and assigns them to CSS custom properties on the document root. Component styles consume those properties using `var()`.
+At startup, `main.tsx` reads the theme values through `import.meta.env` and assigns them to CSS custom properties on the document root.
 
-Vite exposes `VITE_` variables to client-side code, so secrets must never be placed in them, even in a Git-ignored file. Any future server-side secrets should be stored separately and excluded from version control.
+Component styles consume those properties using `var()`.
+
+Vite exposes `VITE_` variables to client-side code, so secrets must never be placed in them, even in a Git-ignored file.
+
+Any future server-side secrets should be stored separately and excluded from version control.
 
 ## Technical Highlights
 
 - Custom hooks and separation of stateful logic from presentation.
 - Controlled inputs, typed event handlers and callback props.
-- Lifted state, unidirectional data flow and derived collections.
+- Lifted state and unidirectional data flow.
+- In-memory search results caching.
+- Cache-aside strategy with Cache Hit and Cache Miss handling.
+- Query normalization and consistent cache keys.
+- Module-level data persistence across React re-renders.
+- TypeScript utility types for type-safe cache management.
+- Separation of cache mutations from the rendering lifecycle.
+- Event-driven state updates and render purity.
+- Encapsulation of search and caching logic within a custom hook.
 - Conditional rendering and keyed lists.
 - Independent component state and dynamic CSS styling.
 - Typed asynchronous HTTP requests and centralized API configuration.
 - Local mock backend and configurable frontend theme.
+- No external state management or caching libraries.
 
 ## Current Scope
 
-The application is a frontend learning project backed by a local mock API. Search history and card adjustments are in-memory UI state. The reviewed implementation does not include explicit loading/error UI or automated test scripts.
+The application is a frontend learning project backed by a local mock API.
+
+Search history, cached search results and card adjustments are maintained in memory.
+
+The caching implementation is designed for a relatively static dataset and does not currently include automatic cache invalidation, cache expiration, size limits or eviction policies.
+
+Searches submitted before the initial dataset has finished loading are not explicitly handled and may produce stale cached results.
+
+The reviewed implementation does not include explicit loading/error UI or automated test scripts.
