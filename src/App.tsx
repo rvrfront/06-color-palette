@@ -9,14 +9,14 @@ import { useApp } from "./hooks/useApp";
 
 export const App = () => {
 
-  const {query, terms, getQueryFromHistoryComponent, getQueryFromSearchComponent, handleCachedResults} = useApp();
+  const {terms, displayedColors, getQueryFromHistoryComponent, getQueryFromSearchComponent} = useApp();
   
      return(
     <div className="app">
       <Header title="Enjoy With colors palette"></Header>
       <History terms= {terms} passQuery={getQueryFromHistoryComponent}></History>
       <Search placeholder="Type color to search..." passQuery={getQueryFromSearchComponent}></Search>
-      <CardContainer props={handleCachedResults(query.toLocaleLowerCase().trim())}></CardContainer>
+      <CardContainer props={displayedColors}></CardContainer>
     </div>
   );
 }
