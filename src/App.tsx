@@ -6,16 +6,17 @@ import {CardContainer} from "./components/CardContainer";
 import {History} from "./components/History";
 import { useApp } from "./hooks/useApp";
 
+
 export const App = () => {
 
-  const {query, terms, getQueryFromHistoryComponent, getQueryFromSearchComponent, filteredColors} = useApp();
-
-    return(
+  const {query, terms, getQueryFromHistoryComponent, getQueryFromSearchComponent, handleCachedResults} = useApp();
+  
+     return(
     <div className="app">
       <Header title="Enjoy With colors palette"></Header>
       <History terms= {terms} passQuery={getQueryFromHistoryComponent}></History>
       <Search placeholder="Type color to search..." passQuery={getQueryFromSearchComponent}></Search>
-      <CardContainer props={filteredColors(query)}></CardContainer>
+      <CardContainer props={handleCachedResults(query.toLocaleLowerCase().trim())}></CardContainer>
     </div>
   );
 }

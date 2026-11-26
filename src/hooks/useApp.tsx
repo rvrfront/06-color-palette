@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import type { CardProps } from "../interfaces/ICard.interface";
 import { getData } from "../helpers/getDataFromApi";
 
+const cachedResults: Record<string, CardProps[]> = {};
+
 export const useApp = () => {
       const [query, setQuery] = useState("");
       const [colors, setColors] = useState<CardProps[]>([]);
       const [terms, setTerms] = useState<string[]>([]);
+  
       
       const addTerm = (arg: string) => {
         if (arg && !terms.includes(arg) && terms.length <= 7) {
@@ -34,6 +37,17 @@ export const useApp = () => {
         }
         return colors; 
       }
+
+      const handleCachedResults = (query: string): CardProps[] => {
+        const cleanedQuery = query.toLocaleLowerCase().trim();
+        console.log("cachedResults: ", cachedResults);
+        if (cleanedQuery && !(cleanedQuery in cachedResults)){
+          cachedResults[cleanedQuery] = filteredColors(cleanedQuery);
+        }
+        return cachedResults[cleanedQuery] ? cachedResults[cleanedQuery] : filteredColors(cleanedQuery)
+      }
+
+      
     
     return {
         //Properties
@@ -43,6 +57,7 @@ export const useApp = () => {
         //Methods
         getQueryFromHistoryComponent,
         getQueryFromSearchComponent,
-        filteredColors
+        filteredColors,
+        handleCachedResults
     }
 }
