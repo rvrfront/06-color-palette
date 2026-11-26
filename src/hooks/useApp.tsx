@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CardProps } from "../interfaces/ICard.interface";
 import { getData } from "../helpers/getDataFromApi";
 
- const cachedResults: Record<string, CardProps[]> = {};
+ /* const cachedResults: Record<string, CardProps[]> = {}; */
 
 export const useApp = () => {
       const [query, setQuery] = useState("");
       const [colors, setColors] = useState<CardProps[]>([]);
       const [terms, setTerms] = useState<string[]>([]);
       const [displayedColors, setDisplayedColors] = useState<CardProps[]>([]);
-            
+      
+      const cachedResults = useRef<Record<string, CardProps[]>>({});
+
       const addTerm = (arg: string) => {
         if (arg && !terms.includes(arg) && terms.length <= 7) {
           setTerms([...terms, arg]);
@@ -48,10 +50,10 @@ export const useApp = () => {
         if (!cleanedQuery){
           return colors;
         }
-        if (!Object.hasOwn(cachedResults, cleanedQuery)){
-          cachedResults[cleanedQuery] = filteredColors(cleanedQuery);
+        if (!Object.hasOwn(cachedResults.current, cleanedQuery)){
+          cachedResults.current[cleanedQuery] = filteredColors(cleanedQuery);
         }
-        return cachedResults[cleanedQuery];
+        return cachedResults.current[cleanedQuery];
       }
 
       
